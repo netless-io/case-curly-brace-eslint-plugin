@@ -1,0 +1,6 @@
+.idea
+.code
+.DS_Store
+docs/
+tests/
+node_modules/
