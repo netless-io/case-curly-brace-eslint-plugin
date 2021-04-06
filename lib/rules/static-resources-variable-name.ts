@@ -127,7 +127,7 @@ export = createRule<Options, MessageID>({
                     return;
                 }
 
-                if (!("name" in node.declarations[0].id)) {
+                if (node.declarations[0].id.type !== "Identifier") {
                     return;
                 }
 
@@ -135,11 +135,19 @@ export = createRule<Options, MessageID>({
                     return;
                 }
 
-                if (!("arguments" in node.declarations[0].init)) {
+                if (node.declarations[0].init.type !== "CallExpression") {
                     return;
                 }
 
-                if (!("value" in node.declarations[0].init.arguments[0])) {
+                if (node.declarations[0].init.callee.type !== "Identifier") {
+                    return;
+                }
+
+                if (node.declarations[0].init.callee.name !== "require") {
+                    return;
+                }
+
+                if (node.declarations[0].init.arguments[0].type !== "Literal") {
                     return;
                 }
 
