@@ -1,18 +1,14 @@
-"use strict";
+import { createRule } from "../utils/createRule";
 
-//------------------------------------------------------------------------------
-// Rule Definition
-//------------------------------------------------------------------------------
-
-module.exports = {
+export = createRule({
+    name: "case-curly-brace",
     meta: {
         type: "suggestion",
 
         docs: {
             description: "when using case, be sure to use it with curly braces",
             category: "Best Practices",
-            recommended: true,
-            url: "https://github.com/netless-io/case-curly-brace/blob/master/docs/rules/case-curly-brace.md"
+            recommended: "error",
         },
 
         schema: [],
@@ -20,10 +16,10 @@ module.exports = {
         fixable: "code",
 
         messages: {
-            missCurlyBrace: "when using case, there is no corresponding curly braces."
-        }
+            missCurlyBrace: "when using case, there is no corresponding curly braces.",
+        },
     },
-
+    defaultOptions: [],
     create(context) {
         return {
             SwitchCase(node) {
@@ -41,17 +37,17 @@ module.exports = {
                     context.report({
                         node: consequent[0],
                         messageId: "missCurlyBrace",
-                        fix: fixer =>  {
+                        fix: fixer => {
                             const leftRange = consequent[0].range;
                             const rightParen = consequent[consequent.length - 1].range;
                             return [
                                 fixer.insertTextBeforeRange(leftRange, "{"),
-                                fixer.insertTextAfterRange(rightParen, "}")
+                                fixer.insertTextAfterRange(rightParen, "}"),
                             ];
                         },
-                    })
+                    });
                 }
-            }
-        }
-    }
-};
+            },
+        };
+    },
+});
