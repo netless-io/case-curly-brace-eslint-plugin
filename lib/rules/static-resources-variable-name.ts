@@ -127,6 +127,10 @@ export = createRule<Options, MessageID>({
                     return;
                 }
 
+                if (typeof node.declarations[0] === "undefined") {
+                    return;
+                }
+
                 if (node.declarations[0].id.type !== "Identifier") {
                     return;
                 }
