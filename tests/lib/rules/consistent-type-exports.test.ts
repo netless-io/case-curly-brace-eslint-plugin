@@ -19,7 +19,7 @@ ruleTester.run("consistent-type-exports", rule, {
             export { a } from './exports/A';
             export type { A } from './exports/A';
             export { b } from './exports/B';
-            export type { B } from './exports/B';
+            export type { B, Bb } from './exports/B';
             export * from 'axios';
             const c = 1;
             console.log(c);
@@ -28,7 +28,14 @@ ruleTester.run("consistent-type-exports", rule, {
     ],
     invalid: [
         {
-            code: "export { A } from './exports/A'",
+            code: "export { A } from './exports/A';",
+            errors: [{ messageId: "typeOverValue", type: AST_NODE_TYPES.Program }],
+        },
+        {
+            code: `
+                export type { A } from './exports/A';
+                export { b, Bb } from './exports/B';
+            `,
             errors: [{ messageId: "typeOverValue", type: AST_NODE_TYPES.Program }],
         },
     ],

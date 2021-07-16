@@ -48,7 +48,7 @@ export = createRule({
                         const statement = s as ts.ExportDeclaration;
 
                         if (statement.isTypeOnly) {
-                            return;
+                            continue;
                         }
 
                         if (!statement.exportClause || !statement.moduleSpecifier) {
@@ -65,7 +65,7 @@ export = createRule({
 
                         for (const element of statement.exportClause.elements) {
                             if (exportTypeCache[moduleFullPath].includes((element.name.escapedText as string))) {
-                                return context.report({
+                                context.report({
                                     node: programNode,
                                     messageId: "typeOverValue"
                                 });
