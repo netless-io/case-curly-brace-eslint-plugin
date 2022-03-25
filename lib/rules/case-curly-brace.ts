@@ -7,6 +7,7 @@ export = createRule({
 
         docs: {
             description: "when using case, be sure to use it with curly braces",
+            category: "Best Practices",
             recommended: "error",
         },
 
