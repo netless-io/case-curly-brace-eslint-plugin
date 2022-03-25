@@ -1,6 +1,6 @@
 import { ESLintUtils } from "@typescript-eslint/experimental-utils";
 import rule from "../../../lib/rules/case-curly-brace";
-import { AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
+import { AST_NODE_TYPES } from "@typescript-eslint/experimental-utils/dist/ts-estree";
 
 const ruleTester = new ESLintUtils.RuleTester({
     parser: "@typescript-eslint/parser",

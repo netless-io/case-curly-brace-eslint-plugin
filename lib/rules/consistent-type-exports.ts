@@ -1,8 +1,8 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
-import { createRule } from "../utils/createRule";
-import ts, { ESMap, ResolvedModuleFull, StringLiteral, SyntaxKind } from "typescript";
-import { ESLintUtils } from "@typescript-eslint/experimental-utils";
-import { ParserServices } from "@typescript-eslint/experimental-utils";
+import { TSESTree } from '@typescript-eslint/experimental-utils';
+import { createRule } from '../utils/createRule';
+import ts, { ESMap, ResolvedModuleFull, StringLiteral, SyntaxKind } from 'typescript';
+import { getParserServices } from '@typescript-eslint/experimental-utils/dist/eslint-utils';
+import { ParserServices } from '@typescript-eslint/experimental-utils/dist/ts-estree';
 
 export = createRule({
     name: "consistent-type-exports",
@@ -11,6 +11,7 @@ export = createRule({
 
         docs: {
             description: "enforces consistent usage of type exports",
+            category: "Best Practices",
             recommended: "error",
         },
 
@@ -20,25 +21,21 @@ export = createRule({
 
         messages: {
             typeOverValue:
-                "All exports in the declaration are only used as types. Use `exports type`",
+                'All exports in the declaration are only used as types. Use `exports type`',
         },
     },
     defaultOptions: [],
     create(context) {
-        const parserServices = ESLintUtils.getParserServices(context);
+        const parserServices = getParserServices(context);
 
         const exportTypeCache: Record<string, string[]> = {};
 
         return {
-            "Program:exit"(programNode: TSESTree.Program): void {
+            'Program:exit'(programNode: TSESTree.Program): void {
                 const ast = parserServices.esTreeNodeToTSNodeMap.get(programNode);
                 const sourceFile = ast.getSourceFile() as SourceFile;
 
-                if (
-                    !sourceFile ||
-                    !sourceFile.resolvedModules ||
-                    !sourceFile.resolvedModules.size
-                ) {
+                if (!sourceFile || !sourceFile.resolvedModules || !sourceFile.resolvedModules.size) {
                     return;
                 }
 
@@ -47,9 +44,7 @@ export = createRule({
                 const moduleMap = new ModuleMap(sourceFile.resolvedModules);
 
                 for (const s of sourceFile.statements) {
-                    if (
-                        [SyntaxKind.ExportDeclaration, SyntaxKind.ExportAssignment].includes(s.kind)
-                    ) {
+                    if ([SyntaxKind.ExportDeclaration, SyntaxKind.ExportAssignment].includes(s.kind)) {
                         const statement = s as ts.ExportDeclaration;
 
                         if (statement.isTypeOnly) {
@@ -64,18 +59,15 @@ export = createRule({
                             continue;
                         }
 
-                        const moduleName = (statement.moduleSpecifier as StringLiteral).text;
+                        const moduleName = (statement.moduleSpecifier as StringLiteral).text
                         const moduleFullPath = moduleMap.fullPath(moduleName);
 
+
                         for (const element of statement.exportClause.elements) {
-                            if (
-                                exportTypeCache[moduleFullPath].includes(
-                                    element.name.escapedText as string,
-                                )
-                            ) {
+                            if (exportTypeCache[moduleFullPath].includes((element.name.escapedText as string))) {
                                 context.report({
                                     node: programNode,
-                                    messageId: "typeOverValue",
+                                    messageId: "typeOverValue"
                                 });
                             }
                         }
@@ -86,11 +78,7 @@ export = createRule({
     },
 });
 
-const getModulePath = (
-    parserServices: ParserServices,
-    modulePath: string,
-    exportTypeCache: Record<string, any>,
-) => {
+const getModulePath = (parserServices: ParserServices, modulePath: string, exportTypeCache: Record<string, any>) => {
     const sourceFile = parserServices.program.getSourceFile(modulePath) as SourceFile;
 
     if (!sourceFile || !sourceFile.resolvedModules) {
@@ -107,7 +95,7 @@ const getModulePath = (
             getModulePath(parserServices, v.resolvedFileName, exportTypeCache);
         }
     });
-};
+}
 
 const getModuleType = (parserServices: ParserServices, modulePath: string) => {
     const sourceFile = parserServices.program.getSourceFile(modulePath) as SourceFile;
@@ -122,18 +110,14 @@ const getModuleType = (parserServices: ParserServices, modulePath: string) => {
     for (const statement of sourceFile.statements) {
         // export type A = string;
         // export interface B {}
-        if (
-            [SyntaxKind.TypeAliasDeclaration, SyntaxKind.InterfaceDeclaration].includes(
-                statement.kind,
-            )
-        ) {
+        if ([SyntaxKind.TypeAliasDeclaration, SyntaxKind.InterfaceDeclaration].includes(statement.kind)) {
             if (statement.modifiers) {
                 if (statement.modifiers[0].kind === SyntaxKind.ExportKeyword) {
                     // @ts-ignore
                     const typeName = statement?.name?.escapedText;
 
                     if (typeName) {
-                        result.push(typeName);
+                        result.push(typeName)
                     }
                 }
             }
@@ -142,17 +126,13 @@ const getModuleType = (parserServices: ParserServices, modulePath: string) => {
         {
             // type A = number;
             // export { A };
-            if (
-                [SyntaxKind.TypeAliasDeclaration, SyntaxKind.InterfaceDeclaration].includes(
-                    statement.kind,
-                )
-            ) {
+            if ([SyntaxKind.TypeAliasDeclaration, SyntaxKind.InterfaceDeclaration].includes(statement.kind)) {
                 if (!statement.modifiers) {
                     // @ts-ignore
                     const typeName = statement?.name?.escapedText;
 
                     if (typeName) {
-                        tempType.push(typeName);
+                        tempType.push(typeName)
                     }
                 }
             }
@@ -164,7 +144,7 @@ const getModuleType = (parserServices: ParserServices, modulePath: string) => {
                     if ("elements" in exportClause) {
                         for (const element of exportClause.elements) {
                             if (tempType.includes(element.name.escapedText)) {
-                                result.push(element.name.escapedText);
+                                result.push(element.name.escapedText)
                             }
                         }
                     }
@@ -174,7 +154,7 @@ const getModuleType = (parserServices: ParserServices, modulePath: string) => {
     }
 
     return result;
-};
+}
 
 class ModuleMap {
     private readonly map: Record<string, string> = {};
@@ -190,8 +170,9 @@ class ModuleMap {
     public fullPath(relativePath: string): string {
         return this.map[relativePath];
     }
+
 }
 
 type SourceFile = ts.SourceFile & {
-    resolvedModules: ESMap<string, ResolvedModuleFull>;
+    resolvedModules: ESMap<string, ResolvedModuleFull>
 };

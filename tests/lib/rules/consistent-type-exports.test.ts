@@ -1,14 +1,14 @@
 import { ESLintUtils } from "@typescript-eslint/experimental-utils";
 import rule from "../../../lib/rules/consistent-type-exports";
-import { AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
-import { getFixturesRootDir } from "../../utils";
+import { AST_NODE_TYPES } from "@typescript-eslint/experimental-utils/dist/ts-estree";
+import { getFixturesRootDir } from '../../utils';
 
 const ruleTester = new ESLintUtils.RuleTester({
     parser: "@typescript-eslint/parser",
     parserOptions: {
         ecmaVersion: 2018,
         tsconfigRootDir: getFixturesRootDir(),
-        project: "./tsconfig.json",
+        project: './tsconfig.json',
     },
 });
 
