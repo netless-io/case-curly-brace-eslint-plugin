@@ -6,7 +6,7 @@ export = {
     rules: {
         "case-curly-brace": caseCurlyBrace,
         "static-resources-variable-name": staticResourcesVariableName,
-        "consistent-type-exports": consistentTypeExports
+        "consistent-type-exports": consistentTypeExports,
     },
     configs: {
         recommended: {

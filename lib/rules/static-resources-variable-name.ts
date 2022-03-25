@@ -22,7 +22,6 @@ export = createRule<Options, MessageID>({
         docs: {
             description:
                 "when assigning a static resource, its variable name must include the resource type",
-            category: "Best Practices",
             recommended: "error",
         },
 
